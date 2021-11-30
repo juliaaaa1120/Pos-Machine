@@ -6,7 +6,9 @@ import java.util.List;
 
 public class PosMachine {
     public String printReceipt(List<String> barcodes) {
-        return null;
+        List<ItemInfo> itemInfos = convertToItemInfos(barcodes);
+        String receipt = renderReceipt(itemInfos);
+        return receipt;
     }
 
     public List<ItemInfo> convertToItemInfos(List<String> barcodes) {
@@ -30,12 +32,12 @@ public class PosMachine {
             if (itemsWithDetail.get(i).getBarcode().equals(itemsWithDetail.get(i - 1).getBarcode())) {
                 currentCount += 1;
             } else {
-                ReceiptItem receiptItem = new ReceiptItem(itemsWithDetail.get(i - 1).getBarcode(), itemsWithDetail.get(i - 1).getPrice(), currentCount);
+                ReceiptItem receiptItem = new ReceiptItem(itemsWithDetail.get(i - 1).getBarcode(), itemsWithDetail.get(i - 1).getName(), itemsWithDetail.get(i - 1).getPrice(), currentCount);
                 receiptItems.add(receiptItem);
                 currentCount = 1;
             }
             if (i == itemsWithDetail.size() - 1) {
-                ReceiptItem receiptItem = new ReceiptItem(itemsWithDetail.get(i).getBarcode(), itemsWithDetail.get(i).getPrice(), currentCount);
+                ReceiptItem receiptItem = new ReceiptItem(itemsWithDetail.get(i).getBarcode(), itemsWithDetail.get(i).getName(), itemsWithDetail.get(i).getPrice(), currentCount);
                 receiptItems.add(receiptItem);
             }
         }
@@ -48,6 +50,22 @@ public class PosMachine {
             totalPrice += receiptItems.get(i).getPrice() * receiptItems.get(i).getQuantity();
         }
         return totalPrice;
+    }
+
+    public String renderReceipt(List<ItemInfo> itemsWithDetail) {
+        StringBuilder receipt = new StringBuilder();
+        receipt.append("***<store earning no money>Receipt***\n");
+        List<ReceiptItem> receiptItems = calculateReceiptItems(itemsWithDetail);
+        for (int i = 0; i < receiptItems.size(); i++) {
+            receipt.append("Name: " + receiptItems.get(i).getName() + ", ");
+            receipt.append("Quantity: " + receiptItems.get(i).getQuantity() + ", ");
+            receipt.append("Unit price: " + receiptItems.get(i).getPrice() + " (yuan), ");
+            receipt.append("Subtotal: " + receiptItems.get(i).getPrice() * receiptItems.get(i).getQuantity() + " (yuan)\n");
+        }
+        receipt.append("----------------------\n");
+        receipt.append("Total: " + calculateTotalPrice(receiptItems) + " (yuan)\n");
+        receipt.append("**********************");
+        return receipt.toString();
     }
 
 }
