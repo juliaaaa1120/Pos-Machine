@@ -30,16 +30,24 @@ public class PosMachine {
             if (itemsWithDetail.get(i).getBarcode().equals(itemsWithDetail.get(i - 1).getBarcode())) {
                 currentCount += 1;
             } else {
-                ReceiptItem receiptItem = new ReceiptItem(itemsWithDetail.get(i - 1).getBarcode(), currentCount);
+                ReceiptItem receiptItem = new ReceiptItem(itemsWithDetail.get(i - 1).getBarcode(), itemsWithDetail.get(i - 1).getPrice(), currentCount);
                 receiptItems.add(receiptItem);
                 currentCount = 1;
             }
             if (i == itemsWithDetail.size() - 1) {
-                ReceiptItem receiptItem = new ReceiptItem(itemsWithDetail.get(i).getBarcode(), currentCount);
+                ReceiptItem receiptItem = new ReceiptItem(itemsWithDetail.get(i).getBarcode(), itemsWithDetail.get(i).getPrice(), currentCount);
                 receiptItems.add(receiptItem);
             }
         }
         return receiptItems;
+    }
+
+    public int calculateTotalPrice(List<ReceiptItem> receiptItems) {
+        int totalPrice = 0;
+        for (int i = 0; i < receiptItems.size(); i++) {
+            totalPrice += receiptItems.get(i).getPrice() * receiptItems.get(i).getQuantity();
+        }
+        return totalPrice;
     }
 
 }
